@@ -34,3 +34,8 @@ class FirstMove(ExampleEngine):
         moves = list(board.legal_moves)
         moves.sort(key=str)
         return PlayResult(moves[0], None)
+
+class Lucy(ExampleEngine):
+  """RandomMove"""
+  def search(self, board: chess.Board, *args: Any) -> PlayResult:
+    return PlayResult(random.choice(list(board.legal_moves)), None)

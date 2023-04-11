@@ -221,8 +221,11 @@ def load_config(config_file: str) -> Configuration:
 
     log_config(CONFIG)
 
-    if "LICHESS_BOT_TOKEN" in os.environ:
-        CONFIG["token"] = os.environ["LICHESS_BOT_TOKEN"]
+    # if "LICHESS_BOT_TOKEN" in os.environ:
+    #     CONFIG["token"] = os.environ["LICHESS_BOT_TOKEN"]
+
+    with open("token.txt", "r") as tokenFile:
+      CONFIG["token"] = tokenFile.read().strip()
 
     validate_config(CONFIG)
     insert_default_values(CONFIG)
