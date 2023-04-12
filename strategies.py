@@ -62,21 +62,24 @@ class Lucy(ExampleEngine):
     # list of options for best move
     bestMoves = []
     # the highest evaluation of any move so far
-    maxEv = -math.inf
+    maxEvaluation = -math.inf
+
+    if numLegalMoves == 1:
+      return PlayResult(bestMoves[0], None)
 
     # for each move
     for move in legalMoves:
       # evaluate the move
-      ev = self.evaluate(board, move)
+      evaluation = self.evaluate(board, move)
       # if the evaluation is greater than the current maximum,
       # clear the array of best moves, and push this move
-      if ev > maxEv:
-        maxEv = ev
+      if evaluation > maxEvaluation:
+        maxEvaluation = evaluation
         bestMoves = []
         bestMoves.append(move)
       # if the evaluation is equal to the current maximum,
       # push this move to the array of best moves
-      elif ev == maxEv:
+      elif evaluation == maxEvaluation:
         bestMoves.append(move)
 
     # randomly select one of the options for best move
