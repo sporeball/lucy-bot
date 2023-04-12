@@ -2,6 +2,7 @@ from __future__ import annotations
 import chess
 from chess.engine import PlayResult
 import random
+import math
 from engine_wrapper import MinimalEngine
 from typing import Any
 
@@ -53,7 +54,7 @@ class Lucy(ExampleEngine):
     # list of options for best move
     bestMoves = []
     # the highest evaluation of any move so far
-    maxEv = 0.0
+    maxEv = -math.inf
 
     # for each move
     for move in legalMoves:
