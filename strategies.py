@@ -65,7 +65,7 @@ class Lucy(ExampleEngine):
     maxEvaluation = -math.inf
 
     if numLegalMoves == 1:
-      return PlayResult(bestMoves[0], None)
+      return PlayResult(legalMoves[0], None)
 
     # for each move
     for move in legalMoves:
