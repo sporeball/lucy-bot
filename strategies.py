@@ -5,21 +5,29 @@ import random
 import math
 from engine_wrapper import MinimalEngine
 from typing import Any
+# from enum import Enum
+
+# class Value(Enum):
+#   PAWN = 1
+#   KNIGHT = 3
+#   BISHOP = 3
+#   ROOK = 5
+#   QUEEN = 9
 
 class ExampleEngine(MinimalEngine):
   pass
 
 class Lucy(ExampleEngine):
   def evaluate(self, board: chess.Board, move) -> float:
-    ev = 0.0
+    evaluation = 0.0
     moveIsCapture = board.is_capture(move)
     moveIsCheck = board.gives_check(move)
     # captures are good
     if moveIsCapture:
-      ev += 0.1
+      evaluation += 0.1
     # checks are better
     if moveIsCheck:
-      ev += 0.5
+      evaluation += 0.5
 
     # push the move
     board.push(move)
@@ -37,14 +45,14 @@ class Lucy(ExampleEngine):
           board.is_capture(response) and
           board.piece_type_at(response.from_square) != chess.KING
         ):
-          ev -= 0.4
+          evaluation -= 0.4
         if board.piece_type_at(response.from_square) == chess.PAWN:
-          ev -= 0.4
+          evaluation -= 0.4
 
     # pop the move
     board.pop()
 
-    return ev
+    return evaluation
 
   def search(self, board: chess.Board, *args: Any) -> PlayResult:
     # list of legal moves
