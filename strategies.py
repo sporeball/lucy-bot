@@ -32,6 +32,48 @@ class Lucy(ExampleEngine):
     # push the move
     board.push(move)
 
+    # determine whether Lucy is allowing the piece to be attacked
+    # pinned pieces still count as attackers
+    movedPieceAttackerSquares = board.attackers(board.turn, move.to_square)
+    numUnpinnedAttackerSquares = 0
+    # for each attacker
+    for attackerSquare in movedPieceAttackerSquares:
+      # try to find a legal capture by that attacker
+      # if no move exists, the attacker is pinned
+      captureByAttacker = None
+      attackerIsPinned = False
+      try:
+        captureByAttacker = board.find_move(attackerSquare, move.to_square)
+      except chess.IllegalMoveError:
+        attackerIsPinned = True
+      # otherwise, push the move
+      if captureByAttacker is not None:
+        numUnpinnedDefenderSquares = 0
+        numUnpinnedAttackerSquares += 1
+        board.push(captureByAttacker)
+        # determine whether Lucy is defending the square
+        # pinned defenders still count as defenders
+        defenderSquares = board.attackers(board.turn, captureByAttacker.to_square)
+        # for each defender
+        for defenderSquare in defenderSquares:
+          # try to find a legal capture by that defender
+          # if no move exists, the defender is pinned
+          captureByDefender = None
+          defenderIsPinned = False
+          try:
+            captureByDefender = board.find_move(defenderSquare, captureByAttacker.to_square)
+          except chess.IllegalMoveError:
+            defenderIsPinned = True
+          if captureByDefender is not None:
+            numUnpinnedDefenderSquares += 1
+            evaluation += 0.1
+          else:
+            evaluation -= 0.1
+        if numUnpinnedDefenderSquares == 0:
+          evaluation -= 0.2
+        # pop the move
+        board.pop()
+
     # get list of the opponent's responses
     legalResponses = list(board.legal_moves)
     # if the move Lucy played is a check,
