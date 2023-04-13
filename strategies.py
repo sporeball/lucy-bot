@@ -17,6 +17,9 @@ from enum import Enum
 class OpeningBook(Enum):
   SCANDINAVIAN = ["e2e4", "d7d5", "e4d5", "d8d5", "b1c3", "d5d8"]
   ITALIAN = ["e2e4", "e7e5", "g1f3", "b8c6", "f1c4"]
+  Q_ACCEPTED = ["d2d4", "d7d5", "c2c4", "d5c4"]
+  Q_DECLINED = ["d2d4", "d7d5", "c2c4", "e7e6"]
+  SLAV = ["d2d4", "d7d5", "c2c4", "c7c6"]
 
 class ExampleEngine(MinimalEngine):
   pass
