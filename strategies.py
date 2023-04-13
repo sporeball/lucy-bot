@@ -5,7 +5,7 @@ import random
 import math
 from engine_wrapper import MinimalEngine
 from typing import Any
-# from enum import Enum
+from enum import Enum
 
 # class Value(Enum):
 #   PAWN = 1
@@ -13,6 +13,10 @@ from typing import Any
 #   BISHOP = 3
 #   ROOK = 5
 #   QUEEN = 9
+
+class OpeningBook(Enum):
+  SCANDINAVIAN = ["e2e4", "d7d5", "e4d5", "d8d5", "b1c3", "d5d8"]
+  ITALIAN = ["e2e4", "e7e5", "g1f3", "b8c6", "f1c4"]
 
 class ExampleEngine(MinimalEngine):
   pass
@@ -103,11 +107,44 @@ class Lucy(ExampleEngine):
     print(f'number of legal moves: {numLegalMoves}')
     # list of options for best move
     bestMoves = []
+    # list of options for book moves
+    bookMoves = []
     # the highest evaluation of any move so far
     maxEvaluation = -math.inf
 
     if numLegalMoves == 1:
       return PlayResult(legalMoves[0], None)
+
+    ply = board.ply()
+    # if in the very early game
+    if ply < 6:
+      # for each opening in the opening book
+      for opening in OpeningBook:
+        # skip the opening if too many moves have been played
+        numOpeningMovesInBook = len(opening.value)
+        if ply >= numOpeningMovesInBook:
+          continue
+        # otherwise
+        bookMove = None
+        shouldMakeBookMove = True
+        i = 0
+        # for each move that has already been played
+        for move in board.move_stack:
+          # check that it matches the moves of this opening
+          # if not, Lucy should not try to continue playing it
+          if move.uci() == opening.value[i]:
+            i += 1
+          else:
+            shouldMakeBookMove = False
+        # add the next move of this opening to the list of possible book moves
+        # from this position
+        if shouldMakeBookMove == True:
+          bookMove = chess.Move.from_uci(opening.value[i])
+          if bookMove in legalMoves:
+            bookMoves.append(bookMove)
+      # select a random book move from this position
+      if len(bookMoves) > 0:
+        return PlayResult(random.choice(bookMoves), None)
 
     # for each move
     for move in legalMoves:
