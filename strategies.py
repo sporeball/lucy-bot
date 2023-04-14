@@ -119,6 +119,16 @@ class Lucy(ExampleEngine):
       return PlayResult(legalMoves[0], None)
 
     ply = board.ply()
+
+    # if playing as white, and black allows it,
+    # break from the opening book to play both e4 and d4
+    if ply == 2:
+      if not board.is_attacked_by(chess.BLACK, chess.D4) and not board.is_attacked_by(chess.BLACK, chess.E4):
+        if board.piece_type_at(chess.D4) == chess.PAWN:
+          return PlayResult(chess.Move.from_uci('e2e4'), None)
+        elif board.piece_type_at(chess.E4) == chess.PAWN:
+          return PlayResult(chess.Move.from_uci('d2d4'), None)
+
     # if in the very early game
     if ply < 6:
       # for each opening in the opening book
