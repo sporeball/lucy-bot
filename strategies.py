@@ -36,6 +36,9 @@ class Lucy(ExampleEngine):
     if moveIsCheck:
       evaluation += 0.5
 
+    if board.piece_type_at(move.from_square) == chess.KING:
+      evaluation -= 0.1
+
     # push the move
     board.push(move)
 
@@ -115,6 +118,7 @@ class Lucy(ExampleEngine):
     # the highest evaluation of any move so far
     maxEvaluation = -math.inf
 
+    # if there is only 1 legal move, play it
     if numLegalMoves == 1:
       return PlayResult(legalMoves[0], None)
 
@@ -155,9 +159,16 @@ class Lucy(ExampleEngine):
           bookMove = chess.Move.from_uci(opening.value[i])
           if bookMove in legalMoves:
             bookMoves.append(bookMove)
-      # select a random book move from this position
+      # if there are any possible book moves from this position
       if len(bookMoves) > 0:
-        return PlayResult(random.choice(bookMoves), None)
+        # debug
+        print('possible book moves:')
+        for move in bookMoves:
+          print(f'- {move.uci()}')
+        # select a book move
+        selectedBookMove = random.choice(bookMoves)
+        print(f'playing book move {selectedBookMove.uci()}')
+        return PlayResult(selectedBookMove, None)
 
     # for each move
     for move in legalMoves:
@@ -174,5 +185,13 @@ class Lucy(ExampleEngine):
       elif evaluation == maxEvaluation:
         bestMoves.append(move)
 
+    # debug
+    print('best moves:')
+    for move in bestMoves:
+      print(f'- {move.uci()}')
+    print(f'(evaluation: {maxEvaluation})')
+
     # randomly select one of the options for best move
-    return PlayResult(random.choice(bestMoves), None)
+    selectedMove = random.choice(bestMoves)
+    print(f'playing move {selectedMove.uci()}')
+    return PlayResult(selectedMove, None)
