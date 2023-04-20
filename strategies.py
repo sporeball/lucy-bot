@@ -25,6 +25,30 @@ class ExampleEngine(MinimalEngine):
   pass
 
 class Lucy(ExampleEngine):
+  def piece_value(self, piece: chess.Piece) -> int:
+    if piece.piece_type == chess.PAWN:
+      return 1
+    if piece.piece_type == chess.KNIGHT:
+      return 3
+    if piece.piece_type == chess.BISHOP:
+      return 3
+    if piece.piece_type == chess.ROOK:
+      return 5
+    if piece.piece_type == chess.QUEEN:
+      return 9
+    # king
+    return 99
+
+  # gets the set of attackers of the given color for the given square which
+  # are not pinned
+  def unpinned_attackers(self, board: chess.Board, color: chess.Color, square: chess.Square) -> chess.SquareSet:
+    attackerSquares = board.attackers(color, square)
+    unpinnedAttackerSquares = []
+    for attackerSquare in attackerSquares:
+      if not board.is_pinned(color, square):
+        unpinnedAttackerSquares.append(attackerSquare)
+    return chess.SquareSet(unpinnedAttackerSquares)
+
   def evaluate(self, board: chess.Board, move) -> float:
     evaluation = 0.0
     moveIsCapture = board.is_capture(move)
@@ -36,11 +60,24 @@ class Lucy(ExampleEngine):
     if moveIsCheck:
       evaluation += 0.5
 
-    if board.piece_type_at(move.from_square) == chess.KING:
+    # unpinned attackers of the piece before it moves
+    unpinnedAttackersBefore = self.unpinned_attackers(board, not board.turn, move.from_square)
+
+    movedPiece = board.piece_at(move.from_square)
+    movedPieceType = board.piece_type_at(move.from_square)
+
+    # king moves aren't usually a good idea
+    if movedPieceType == chess.KING:
       evaluation -= 0.1
 
     # push the move
+    # it is now the opponent's turn
     board.push(move)
+
+    # unpinned attackers of the piece after it has moved
+    unpinnedAttackersAfter = self.unpinned_attackers(board, board.turn, move.to_square)
+    if len(unpinnedAttackersBefore) > 0 and len(unpinnedAttackersAfter) == 0:
+      evaluation += self.piece_value(movedPiece) * 0.1
 
     # determine whether Lucy is allowing the piece to be attacked
     # pinned pieces still count as attackers
