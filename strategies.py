@@ -76,7 +76,7 @@ class Lucy(ExampleEngine):
 
     # unpinned attackers of the piece after it has moved
     unpinnedAttackersAfter = self.unpinned_attackers(board, board.turn, move.to_square)
-    if len(unpinnedAttackersBefore) > 0 and len(unpinnedAttackersAfter) == 0:
+    if len(unpinnedAttackersBefore) > 0 and len(unpinnedAttackersAfter) == 0 and movedPieceType != chess.KING:
       evaluation += self.piece_value(movedPiece) * 0.1
 
     # determine whether Lucy is allowing the piece to be attacked
