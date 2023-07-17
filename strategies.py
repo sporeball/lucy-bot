@@ -53,12 +53,16 @@ class Lucy(ExampleEngine):
     evaluation = 0.0
     moveIsCapture = board.is_capture(move)
     moveIsCheck = board.gives_check(move)
+    moveIsCastle = board.is_castling(move)
     # captures are good
     if moveIsCapture:
       evaluation += 0.1
     # checks are better
     if moveIsCheck:
       evaluation += 0.5
+    # castling is important!
+    if moveIsCastle:
+      evaluation += 5
 
     # unpinned attackers of the piece before it moves
     unpinnedAttackersBefore = self.unpinned_attackers(board, not board.turn, move.from_square)
